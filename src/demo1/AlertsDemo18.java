@@ -1,68 +1,57 @@
 package demo1;
 
 import java.util.concurrent.TimeUnit;
-
-import org.testng.Assert;
-
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-
-
+import org.testng.Assert;
 
 public class AlertsDemo18 {
 
 	public static void main(String[] args) throws InterruptedException {
 
-		 System.setProperty("webdriver.chrome.driver",
+		System.setProperty("webdriver.chrome.driver",
+				"C:\\Users\\VENOM\\Downloads\\chromedriver-win64 (1)\\chromedriver-win64\\chromedriver.exe");
 
-	                "C:\\Users\\VENOM\\Downloads\\chromedriver-win64 (1)\\chromedriver-win64\\chromedriver.exe");
-
-	        WebDriver driver = new ChromeDriver();
-
-	        driver.manage().window().maximize();
-
-			//Implicit Wait()    ------------ it is for selenium 3 version not for 4
-
-			driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-
-		// Now launch the URL
+		WebDriver driver = new ChromeDriver();
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 
 		driver.get("https://demoqa.com/alerts");
-
-		Thread.sleep(3000);
-
-		driver.findElement(By.xpath("//button[@id=\"promtButton\"]")).click();
-
-		Thread.sleep(3000);
-
-		// to verify the alert
-
-		// first check the alert text
-
-		System.out.println(driver.switchTo().alert().getText());
-		System.out.println("Allert Accepted");
-	
-		
-		// compare expected and alert text are same or not
-		//for that we have used to assertion concept
-		//testng have assert equal method which allow the comaprision
-		//add testng jar file to allow assert methods in program
-		//comparing the text
-		
-		String actualResult =driver.switchTo().alert().getText();
-		String expResult ="Do you confirm action?";
-		Assert.assertEquals(actualResult, expResult);
-		//if both are equal 
-		System.out.println("Allert is varified");
-		
-		//now to accept the allert
 		Thread.sleep(2000);
-		driver.switchTo().alert().accept();		
-		
-		
 
+		// Locate the prompt button
+		WebElement promptBtn = driver.findElement(By.id("promtButton"));
+
+		// Scroll to element to prevent ad overlay blocking
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].scrollIntoView(true);", promptBtn);
+		Thread.sleep(1000);
+
+		// Click using JavaScript to avoid ad overlay click interception
+		js.executeScript("arguments[0].click();", promptBtn);
+		Thread.sleep(2000);
+
+		// 1. Fetch Alert Text
+		String actualResult = driver.switchTo().alert().getText();
+		System.out.println("Alert Text: " + actualResult);
+
+		// 2. Compare Expected and Actual Text for Prompt Box
+		String expResult = "Please enter your name";
+		Assert.assertEquals(actualResult, expResult);
+		System.out.println("Alert Text Verified Successfully!");
+
+		// 3. Optional: Send text to the prompt box before accepting
+		driver.switchTo().alert().sendKeys("Samrat");
+
+		// 4. Accept the Alert
+		Thread.sleep(2000);
+		driver.switchTo().alert().accept();
+		System.out.println("Alert Accepted");
+
+		Thread.sleep(2000);
+		driver.quit();
 	}
-
 }
